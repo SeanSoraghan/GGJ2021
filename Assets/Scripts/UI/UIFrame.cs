@@ -54,7 +54,7 @@ public class UIFrame : MonoBehaviour
 
 		GUIStyle style = new GUIStyle();
 		style.alignment = LabelAlignment;
-		style.normal.textColor = Color.white;
+		style.normal.textColor = Color.black;
 		float labelWidth = labelProportion * w;
 		int margin = 5;
 		if (FloatLabelLeft)

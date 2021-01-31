@@ -26,7 +26,7 @@ public class Instructions : MonoBehaviour
 
 		GUIStyle style = new GUIStyle();
 		style.alignment = TextAnchor.MiddleCenter;
-		style.normal.textColor = Color.white;
+		style.normal.textColor = Color.black;
 		GUI.Label(new Rect(centre.x - halfW, centre.y - halfH, w, h), message, style);
 	}
 }

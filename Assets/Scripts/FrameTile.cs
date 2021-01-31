@@ -12,7 +12,7 @@ public class FrameTile : MonoBehaviour
     {
         framePathRenderer = gameObject.AddComponent<PathRenderer>();
         framePathRenderer.LineThickness = FrameThickness;
-        framePathRenderer.TextureName = "White";
+        framePathRenderer.TextureName = "UI";
     }
 
     public void Show()
