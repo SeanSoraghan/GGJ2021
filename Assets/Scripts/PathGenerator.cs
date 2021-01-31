@@ -16,13 +16,16 @@ public class PathGenerator : MonoBehaviour
         get
         {
             List<Vector3> positions = new List<Vector3>();
-            Vector3 currentPoint = new Vector3(EntryPoint.x, EntryPoint.y, 0.0f) * LengthMultiplier;
-            positions.Add(new Vector3(EntryPoint.x, EntryPoint.y, 0.0f) * LengthMultiplier);
-            for (int i = 0; i < pathPoints.Count; ++i)
+            if (pathPoints.Count > 0)
             {
-                positions.Add(new Vector3(pathPoints[i].x, pathPoints[i].y, 0.0f) * LengthMultiplier);
+                Vector3 currentPoint = new Vector3(EntryPoint.x, EntryPoint.y, 0.0f) * LengthMultiplier;
+                positions.Add(new Vector3(EntryPoint.x, EntryPoint.y, 0.0f) * LengthMultiplier);
+                for (int i = 0; i < pathPoints.Count; ++i)
+                {
+                    positions.Add(new Vector3(pathPoints[i].x, pathPoints[i].y, 0.0f) * LengthMultiplier);
+                }
+                positions.Add(new Vector3(ExitPoint.x, ExitPoint.y, 0.0f) * LengthMultiplier);
             }
-            positions.Add(new Vector3(ExitPoint.x, ExitPoint.y, 0.0f) * LengthMultiplier);
             return positions;
         }
     }

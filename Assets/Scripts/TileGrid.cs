@@ -18,14 +18,14 @@ public class TileGrid : MonoBehaviour
     Vector2Int currentTileXY = Vector2Int.zero;
     List<Vector2Int> emptyTilePositions = new List<Vector2Int>();
 
-    void ClearGrid()
+    public void ClearGrid()
     {
         emptyTilePositions.Clear();
         for (int tileX = 0; tileX < GridWidth; ++tileX)
         {
             for (int tileY = 0; tileY < GridHeight; ++tileY)
             {
-                tiles[tileX][tileY].GetComponent<PathGenerator>().ClearPath();
+                tiles[tileX][tileY].GetComponent<PathTile>().ClearTile();
                 emptyTilePositions.Add(new Vector2Int(tileX, tileY));
             }
         }
@@ -81,6 +81,7 @@ public class TileGrid : MonoBehaviour
         {
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathGenerator>().EntryPoint = nextTileEntryPoint;
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().GeneratePath();
+            tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().BeginDrawing();
         }
         else
         {
@@ -102,6 +103,7 @@ public class TileGrid : MonoBehaviour
                 tiles[gridX][gridY].GetComponent<PathGenerator>().SideLength = TileSideLength;
                 tiles[gridX][gridY].GetComponent<PathRenderer>().LineDrawingSpeedUnitsPerSecond = LineDrawingSpeedUnitsPerSecond;
                 tiles[gridX][gridY].GetComponent<PathRenderer>().PointReachedThreshold = PointReachedThreshold;
+                tiles[gridX][gridY].GetComponent<PathRenderer>().TextureName = "Squiggle";
                 emptyTilePositions.Add(new Vector2Int(gridX, gridY));
                 for (int gridMarkerX = 0; gridMarkerX < VisualGridCoarse; ++gridMarkerX)
                 {
@@ -124,6 +126,7 @@ public class TileGrid : MonoBehaviour
             Vector2Int randomEntryPoint = Vector2Int.zero;
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathGenerator>().EntryPoint = randomEntryPoint;
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().GeneratePath();
+            tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().BeginDrawing();
         }
         else
         {

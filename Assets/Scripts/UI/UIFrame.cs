@@ -6,14 +6,18 @@ public class UIFrame : MonoBehaviour
 {
 	public float panelThickness = 5.0f;
 	public float sideLengthProportion = 0.2f;
+	public float labelProportion = 0.1f;
 	public GUISkin guiSkin;
-
-	public Vector2 panelFrameCentre = new Vector2(0.5f, 0.5f); 
-
+	public string FrameLabel;
+	public bool FloatLabelLeft = true;
+	public TextAnchor LabelAlignment;
+	public Vector2 panelFrameCentre = new Vector2(0.5f, 0.5f);
+	public bool display = true;
 
 	void OnGUI()
 	{
-		DrawPanel();
+		if (display)
+			DrawPanel();
 	}
 
 	void DrawPanel()
@@ -47,5 +51,15 @@ public class UIFrame : MonoBehaviour
 
 		Vector2 bottomBarXY = new Vector2(centre.x - halfW, centre.y + halfH - panelThickness);
 		GUI.Box(new Rect(bottomBarXY.x, bottomBarXY.y, frameRectWidth, panelThickness), "");
+
+		GUIStyle style = new GUIStyle();
+		style.alignment = LabelAlignment;
+		style.normal.textColor = Color.white;
+		float labelWidth = labelProportion * w;
+		int margin = 5;
+		if (FloatLabelLeft)
+			GUI.Label(new Rect(bottomBarXY.x - labelWidth - margin, h - frameRectHeight, labelWidth, frameRectHeight), FrameLabel, style);
+		else
+			GUI.Label(new Rect(bottomBarXY.x + frameRectWidth + margin, h - frameRectHeight, labelWidth, frameRectHeight), FrameLabel, style);
 	}
 }

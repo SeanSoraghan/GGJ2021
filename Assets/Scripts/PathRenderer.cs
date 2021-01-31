@@ -19,10 +19,32 @@ public class PathRenderer : MonoBehaviour
 
     bool drawingLine = false;
 
+    string textureName = "White";
+    public string TextureName
+    {
+        get
+        {
+            return textureName;
+        }
+        set
+        {
+            textureName = value;
+            UpdateTexture();
+        }
+    }
+
+    void UpdateTexture()
+    {
+        Material m = (Material)Resources.Load(TextureName, typeof(Material));
+        if (m != null)
+            meshRenderer.material = m;
+    }
+
     void Awake()
     {
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        UpdateTexture();
         meshFilter.mesh = new Mesh();
     }
 
@@ -98,7 +120,7 @@ public class PathRenderer : MonoBehaviour
 
     IEnumerator LineDraw()
     {
-        while (drawingLine)
+        while (drawingLine && OwnerTile.State == PathTile.TileState.Drawing)
         {
             renderPositions[renderPositions.Count - 1] = renderPositions[renderPositions.Count - 1] + currentSegmentDirection * Time.deltaTime * LineDrawingSpeedUnitsPerSecond;
             float renderMagnitude = (renderPositions[renderPositions.Count - 1] - renderPositions[renderPositions.Count - 2]).magnitude;

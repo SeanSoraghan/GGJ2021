@@ -18,9 +18,9 @@ public class InputHandler : MonoBehaviour
 	private void OnDestroy()
 	{
 		InputActionMap actionMap = inputActions.actionMaps[0];
-		Assert.IsTrue(actionMap.actions.Count == 2);
 		actionMap.actions[0].performed -= OnUp;
 		actionMap.actions[1].performed -= OnRight;
+		actionMap.actions[2].performed -= OnFired;
 	}
 
 	private void Awake()
@@ -48,9 +48,9 @@ public class InputHandler : MonoBehaviour
 	void Start()
 	{
 		InputActionMap actionMap = inputActions.actionMaps[0];
-		Assert.IsTrue(actionMap.actions.Count == 2);
 		actionMap.actions[0].performed += OnUp;
 		actionMap.actions[1].performed += OnRight;
+		actionMap.actions[2].performed += OnFired;
 	}
 
 	public void OnUp(InputAction.CallbackContext context)
@@ -67,15 +67,26 @@ public class InputHandler : MonoBehaviour
 		MovePlayerCamToCursor();
 	}
 
+	public void OnFired(InputAction.CallbackContext context)
+	{
+		if (levelController.setupComplete)
+		{
+			Vector2 playerPos = levelController.PlayerCameraObject.transform.position;
+			Vector2 targetPos = levelController.TargetCamObject.transform.position;
+			float distFromTarget = (targetPos - playerPos).magnitude;
+			if (distFromTarget < TargetReachedThreshold)
+			{
+				levelController.ClearLevel();
+				levelController.CreateLevel();
+			}
+		}
+	}
+
 	void MovePlayerCamToCursor()
 	{
-		levelController.PlayerCameraObject.transform.position = levelController.MainCameraObject.GetComponent<Camera>().ScreenToWorldPoint(pointerXY);
-		Vector2 playerPos = levelController.PlayerCameraObject.transform.position;
-		Vector2 targetPos = levelController.TargetCamObject.transform.position;
-		float distFromTarget = (targetPos - playerPos).magnitude;
-		if (distFromTarget < TargetReachedThreshold)
-		{
-			levelController.CreateLevel();
-		}
+		float playerZ = levelController.PlayerCameraObject.transform.position.z;
+		Vector3 newPos = levelController.GridCameraObject.GetComponent<Camera>().ScreenToWorldPoint(pointerXY);
+		levelController.PlayerCameraObject.transform.position = new Vector3(newPos.x, newPos.y, playerZ);
+		
 	}
 }

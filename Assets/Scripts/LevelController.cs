@@ -5,13 +5,19 @@ using UnityEngine;
 public class LevelController : MonoBehaviour
 {
     public TileGrid Grid;
-    public GameObject MainCameraObject;
+    public GameObject GridCameraObject;
     public GameObject TargetCamObject;
     public GameObject PlayerCameraObject;
+    public GameObject CurrentFrameObject;
+    public GameObject TargetFrameObject;
+    public GameObject InstructionsObject;
     public float MainGridHeightProportion = 0.8f;
+
+    public bool setupComplete = false;
 
     void Start()
     {
+        ClearLevel();
         CreateLevel();
     }
 
@@ -22,40 +28,71 @@ public class LevelController : MonoBehaviour
         LayoutCameras();
     }
 
-    public void CreateLevel()
+    void ShowCamFeed(GameObject camObj)
     {
+        Vector3 pos = camObj.transform.position;
+        camObj.transform.position = new Vector3(pos.x, pos.y, -1.0f);
+    }
+
+    void HideCamFeed(GameObject camObj)
+    {
+        Vector3 pos = camObj.transform.position;
+        camObj.transform.position = new Vector3(pos.x, pos.y, 2.0f);
+    }
+
+    public void ClearLevel()
+    {
+        setupComplete = false;
         if (TargetCamObject != null)
         {
             Camera targetCamera = TargetCamObject.GetComponent<Camera>();
-            targetCamera.enabled = false;
+            HideCamFeed(TargetCamObject);
+            UIFrame targetCamFrame = TargetFrameObject.GetComponent<UIFrame>();
+            if (targetCamFrame != null)
+            {
+                targetCamFrame.display = false;
+            }
         }
         if (PlayerCameraObject != null)
         {
             Camera playerCamera = PlayerCameraObject.GetComponent<Camera>();
-            playerCamera.enabled = false;
+            HideCamFeed(PlayerCameraObject);
             FrameTile playerFrameTile = PlayerCameraObject.GetComponentInChildren<FrameTile>();
             if (playerFrameTile != null)
             {
                 playerFrameTile.Hide();
             }
+            UIFrame playerCamFrame = CurrentFrameObject.GetComponent<UIFrame>();
+            if (playerCamFrame != null)
+            {
+                playerCamFrame.display = false;
+            }
         }
+        if (InstructionsObject != null)
+            InstructionsObject.GetComponent<Instructions>().display = false;
+        Grid.ClearGrid();
+    }
+
+    public void CreateLevel()
+    {
         Grid.GenerateGrid();
     }
 
     void LayoutCameras()
     {
         float screenAspect = (float)Screen.height / (float)Screen.width;
-        if (MainCameraObject != null)
+        if (GridCameraObject != null)
         {
-            MainCameraObject.transform.position = new Vector3(Grid.GridWidth * (Grid.TileSideLength - 1), Grid.GridHeight * (Grid.TileSideLength - 1), -2.0f) * 0.5f;
-            Camera mainCamera = MainCameraObject.GetComponent<Camera>();
-            mainCamera.orthographicSize = 6;
-            mainCamera.rect = new Rect(0.0f, 0.2f, 1.0f, MainGridHeightProportion);
+            GridCameraObject.transform.position = new Vector3(Grid.GridWidth * (Grid.TileSideLength - 1), Grid.GridHeight * (Grid.TileSideLength - 1), -2.0f) * 0.5f;
+            Camera gridCamera = GridCameraObject.GetComponent<Camera>();
+            gridCamera.orthographicSize = 6;
+            gridCamera.rect = new Rect(0.0f, 0.2f, 1.0f, MainGridHeightProportion);
         }
         float panelCamWidth = (1.0f - MainGridHeightProportion) * screenAspect;
+        float textWidthProportion = 0.3f;
         if (TargetCamObject != null)
         {
-            UIFrame targetCamFrame = TargetCamObject.GetComponent<UIFrame>();
+            UIFrame targetCamFrame = TargetFrameObject.GetComponent<UIFrame>();
             if (targetCamFrame != null)
             {
                 targetCamFrame.panelFrameCentre = new Vector2(1.0f - panelCamWidth * 0.5f, MainGridHeightProportion + (1.0f - MainGridHeightProportion) * 0.5f);
@@ -63,11 +100,11 @@ public class LevelController : MonoBehaviour
             }
             Camera targetCamera = TargetCamObject.GetComponent<Camera>();
             targetCamera.rect = new Rect(1.0f - panelCamWidth, 0.0f, panelCamWidth, 1.0f - MainGridHeightProportion);
-            targetCamera.enabled = false;
+            HideCamFeed(TargetCamObject);
         }
         if (PlayerCameraObject != null)
         {
-            UIFrame playerCamFrame = PlayerCameraObject.GetComponent<UIFrame>();
+            UIFrame playerCamFrame = CurrentFrameObject.GetComponent<UIFrame>();
             if (playerCamFrame != null)
             {
                 playerCamFrame.panelFrameCentre = new Vector2(panelCamWidth * 0.5f, MainGridHeightProportion + (1.0f - MainGridHeightProportion) * 0.5f);
@@ -75,7 +112,7 @@ public class LevelController : MonoBehaviour
             }
             Camera playerCamera = PlayerCameraObject.GetComponent<Camera>();
             playerCamera.rect = new Rect(0.0f, 0.0f, panelCamWidth, 1.0f - MainGridHeightProportion);
-            playerCamera.enabled = false;
+            HideCamFeed(PlayerCameraObject);
         }
     }
 
@@ -86,12 +123,18 @@ public class LevelController : MonoBehaviour
             Vector2 topLeftTileWorldPos = Grid.GetTileWorldCentre(new Vector2Int(0, 0));
             PlayerCameraObject.transform.position = new Vector3(topLeftTileWorldPos.x, topLeftTileWorldPos.y, -1.0f);
             Camera playerCamera = PlayerCameraObject.GetComponent<Camera>();
-            playerCamera.enabled = true;
+            ShowCamFeed(PlayerCameraObject);
 
             FrameTile playerFrameTile = PlayerCameraObject.GetComponentInChildren<FrameTile>();
             if (playerFrameTile != null)
             {
                 playerFrameTile.Show();
+            }
+
+            UIFrame playerCamFrame = CurrentFrameObject.GetComponent<UIFrame>();
+            if (playerCamFrame != null)
+            {
+                playerCamFrame.display = true;
             }
         }
 
@@ -100,8 +143,19 @@ public class LevelController : MonoBehaviour
             Vector3 targetPos = ChooseTargetPosition();
             TargetCamObject.transform.position = targetPos;
             Camera targetCamera = TargetCamObject.GetComponent<Camera>();
-            targetCamera.enabled = true;
+            ShowCamFeed(TargetCamObject);
+
+            UIFrame targetCamFrame = TargetFrameObject.GetComponent<UIFrame>();
+            if (targetCamFrame != null)
+            {
+                targetCamFrame.display = true;
+            }
         }
+
+        if (InstructionsObject != null)
+            InstructionsObject.GetComponent<Instructions>().display = true;
+
+        setupComplete = true;
     }
 
     Vector3 ChooseTargetPosition()

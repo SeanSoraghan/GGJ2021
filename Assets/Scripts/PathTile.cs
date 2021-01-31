@@ -25,13 +25,26 @@ public class PathTile : MonoBehaviour
         }
     }
 
+    public void ClearTile()
+    {
+        pathGenerator.ClearPath();
+        pathRenderer.Positions.Clear();
+        pathRenderer.Positions = pathGenerator.PathPositions;
+        pathRenderer.RenderPathImmediate();
+        _tileState = TileState.Empty;
+    }
+
     public void GeneratePath()
     {
         pathGenerator.GeneratePath();
         pathRenderer.Positions.Clear();
         pathRenderer.Positions = pathGenerator.PathPositions;
-        pathRenderer.BeginDrawingLine();
+    }
+
+    public void BeginDrawing()
+    {
         _tileState = TileState.Drawing;
+        pathRenderer.BeginDrawingLine();
     }
 
     public void PathDrawingComplete()
