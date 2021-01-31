@@ -1,0 +1,52 @@
+{
+    "name": "SquigControls",
+    "maps": [
+        {
+            "name": "SquigActions",
+            "id": "e00b5e4d-6603-42bf-bb9c-dcc4a0752e3c",
+            "actions": [
+                {
+                    "name": "MoveUp",
+                    "type": "Value",
+                    "id": "832e531d-4003-4b1d-a9a1-af695efc9658",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "MoveRight",
+                    "type": "Value",
+                    "id": "6d4b2dda-f9e1-473c-a31b-2f7085a75bdc",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "baa815b3-6f41-4255-ac23-1d85cc13c8cd",
+                    "path": "<Mouse>/position/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d14eef32-38fd-43e5-b37d-33a4f4f1c587",
+                    "path": "<Mouse>/position/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
