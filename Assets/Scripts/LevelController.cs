@@ -15,7 +15,8 @@ public class LevelController : MonoBehaviour
 
     public bool setupComplete = false;
 
-    float[] rotationOptions = { 0.0f, 45.0f, 90.0f, 135.0f, 180.0f, 225.0f, 270.0f, 315.0f};
+    float[] rotationOptions = { -45.0f, 0.0f, 45.0f };
+    int numRotationOptions = 3;
 
     void Start()
     {
@@ -144,7 +145,7 @@ public class LevelController : MonoBehaviour
         {
             Vector3 targetPos = ChooseTargetPosition();
             TargetCamObject.transform.position = targetPos;
-            TargetCamObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, rotationOptions[Random.Range(0, 8)]);
+            TargetCamObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, rotationOptions[Random.Range(0, numRotationOptions)]);
             Camera targetCamera = TargetCamObject.GetComponent<Camera>();
             ShowCamFeed(TargetCamObject);
 

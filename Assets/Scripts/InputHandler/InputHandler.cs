@@ -84,7 +84,7 @@ public class InputHandler : MonoBehaviour
 			else if (controller.PlayerControlState == PlayerTransformController.ControlState.RotationByPlayer)
 			{
 				float pointerX = context.ReadValue<float>();
-				controller.InputZRotation = pointerXY.x - pointerX;
+				controller.InputZRotation = Mathf.Clamp(pointerXY.x - pointerX , -45.0f, 45.0f);
 				CheckWinState();
 			}
 		}
