@@ -63,7 +63,7 @@ public class PlayerTransformController : MonoBehaviour
                 gameObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, InputZRotation);
                 break;
             case ControlState.RotatingBack:
-                if (gameObject.transform.rotation.z != 0.0f)
+                if (gameObject.transform.rotation.eulerAngles.z != defaultZRotation)
                 {
                     rotationAnimationT += Time.deltaTime;
                     float animCurveCounter = (Mathf.Pow(2.0f, rotationAnimationT * 4.0f) - 1.0f) / 15.0f;
@@ -75,6 +75,10 @@ public class PlayerTransformController : MonoBehaviour
                         gameObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, defaultZRotation);
                         PlayerControlState = ControlState.NoRotation;
                     }
+                }
+                else
+                {
+                    PlayerControlState = ControlState.NoRotation;
                 }
                 break;
             default: break;
