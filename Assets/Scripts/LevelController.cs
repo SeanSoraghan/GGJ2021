@@ -46,9 +46,8 @@ public class LevelController : MonoBehaviour
         camObj.transform.position = new Vector3(pos.x, pos.y, 2.0f);
     }
 
-    public void ClearLevel()
+    void HidePlayerAndTarget()
     {
-        setupComplete = false;
         if (TargetCamObject != null)
         {
             Camera targetCamera = TargetCamObject.GetComponent<Camera>();
@@ -74,9 +73,30 @@ public class LevelController : MonoBehaviour
                 playerCamFrame.display = false;
             }
         }
+    }
+
+    public void ClearLevel()
+    {
+        setupComplete = false;
+        HidePlayerAndTarget();
         if (InstructionsObject != null)
             InstructionsObject.GetComponent<Instructions>().display = false;
         Grid.ClearGrid();
+    }
+
+    public void EraseAndCreateNewLevel()
+    {
+        setupComplete = false;
+        HidePlayerAndTarget();
+        if (InstructionsObject != null)
+            InstructionsObject.GetComponent<Instructions>().display = false;
+        Grid.EraseGrid();
+    }
+
+    public void AllTilesErased()
+    {
+        Grid.ClearGrid();
+        Grid.GenerateGrid();
     }
 
     public void CreateLevel()

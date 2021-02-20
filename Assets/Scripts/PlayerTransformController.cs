@@ -73,8 +73,8 @@ public class PlayerTransformController : MonoBehaviour
             {
                 if (prevState == AnimationState.WinStateAnimation)
                 {
-                    levelController?.ClearLevel();
-                    levelController?.CreateLevel();
+                    if (levelController.setupComplete)
+                        levelController?.EraseAndCreateNewLevel();
                 }
             }
             else if (animState == AnimationState.Rotating)

@@ -116,10 +116,11 @@ public class InputHandler : MonoBehaviour
 	{
 		if (ShouldRespondToInput())
 		{
-			if (!CheckWinState())
-				playerController?.Shake();
-			else
-				playerController?.Win();
+			playerController?.Win(); // (Debug win state)
+			//if (!CheckWinState())
+			//	playerController?.Shake();
+			//else
+			//	playerController?.Win();
 		}
 	}
 

@@ -13,7 +13,8 @@ public class PathTile : MonoBehaviour
     {
         Empty = 0,
         Drawing,
-        Complete
+        Complete,
+        Erasing
     }
 
     TileState _tileState = TileState.Empty;
@@ -55,10 +56,30 @@ public class PathTile : MonoBehaviour
         }
     }
 
+    public void BeginErasing()
+    {
+        _tileState = TileState.Erasing;
+        if (OwnerGrid.levelController.drawImmediate)
+        {
+            pathRenderer.ErasePathImmediate();
+            PathErasingComplete();
+        }
+        else
+        {
+            pathRenderer.BeginErasingLine();
+        }
+    }
+
     public void PathDrawingComplete()
     {
         _tileState = TileState.Complete;
         OwnerGrid?.TileCompleted();
+    }
+
+    public void PathErasingComplete()
+    {
+        _tileState = TileState.Empty;
+        OwnerGrid?.TileEraseCompleted();
     }
 
     void Awake()

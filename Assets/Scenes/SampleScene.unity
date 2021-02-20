@@ -664,7 +664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abfb7adcd4657c441aa505e8e2e00619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawImmediate: 1
+  drawImmediate: 0
   Grid: {fileID: 123827343}
   GridCameraObject: {fileID: 519420028}
   TargetCamObject: {fileID: 1591765143}

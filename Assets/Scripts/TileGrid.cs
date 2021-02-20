@@ -12,11 +12,25 @@ public class TileGrid : MonoBehaviour
     public float LineDrawingSpeedUnitsPerSecond = 5.0f;
     public float PointReachedThreshold = 0.1f;
     public LevelController levelController;
-    public int VisualGridCoarse = 2; 
+    public int VisualGridCoarse = 2;
+
+    int numErasedTiles = 0;
 
     List<List<GameObject>> tiles = new List<List<GameObject>>();
     Vector2Int currentTileXY = Vector2Int.zero;
     List<Vector2Int> emptyTilePositions = new List<Vector2Int>();
+
+    public void EraseGrid()
+    {
+        numErasedTiles = 0;
+        for (int tileX = 0; tileX < GridWidth; ++tileX)
+        {
+            for (int tileY = 0; tileY < GridHeight; ++tileY)
+            {
+                tiles[tileX][tileY].GetComponent<PathTile>().BeginErasing();
+            }
+        }
+    }
 
     public void ClearGrid()
     {
@@ -86,6 +100,15 @@ public class TileGrid : MonoBehaviour
         else
         {
             ChooseEmptyTile();
+        }
+    }
+
+    public void TileEraseCompleted()
+    {
+        ++numErasedTiles;
+        if (numErasedTiles >= GridWidth * GridHeight)
+        {
+            levelController.AllTilesErased();
         }
     }
 
