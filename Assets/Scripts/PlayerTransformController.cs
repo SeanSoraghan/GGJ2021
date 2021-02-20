@@ -47,6 +47,7 @@ public class PlayerTransformController : MonoBehaviour
             shaking = value;
             if (shaking)
             {
+                SFXManager.Instance?.PlayClip(SFXManager.SFXType.PlacementIncorrect);
                 shakeSegment = 0;
                 shakeAnimationT = 0.0f;
                 shakeCentreRotation = gameObject.transform.rotation.eulerAngles.z;
@@ -79,6 +80,7 @@ public class PlayerTransformController : MonoBehaviour
             }
             else if (animState == AnimationState.Rotating)
             {
+                SFXManager.Instance?.PlayClip(SFXManager.SFXType.Tilt);
                 rotationAnimationStartValue = gameObject.transform.rotation.eulerAngles.z;
                 if (rotationAnimationStartValue > 180.0f)
                 {
@@ -88,6 +90,7 @@ public class PlayerTransformController : MonoBehaviour
             }
             else if (animState == AnimationState.WinStateAnimation)
             {
+                SFXManager.Instance?.PlayClip(SFXManager.SFXType.PlacementCorrect);
                 rotationAnimationStartValue = gameObject.transform.rotation.eulerAngles.z + 360.0f;
                 rotationAnimationT = 0.0f;
                 postWinPauseT = 0.0f;

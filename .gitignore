@@ -74,4 +74,4 @@ crashlytics-build.properties
 
 # Custom locations
 # Audio resources
-/[Aa]ssets/Audio
+/[Aa]ssets/Resources/Audio
