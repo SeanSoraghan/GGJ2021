@@ -20,6 +20,8 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
+
         ClearLevel();
         CreateLevel();
     }

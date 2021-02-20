@@ -415,6 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c4f8b70e27424f4a9e4e4eba00c0036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeedDegPerSec: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -726,6 +727,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaefb433c79933c4a99a692f3608bc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSensitivity: 1
   TargetReachedThreshold: 0.5
   RotationReachedThreshold: 5
 --- !u!1 &1591765143

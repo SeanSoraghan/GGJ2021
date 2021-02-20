@@ -4,81 +4,81 @@ using UnityEngine;
 
 public class PlayerTransformController : MonoBehaviour
 {
-    float defaultZRotation = 0.0f;
-    float targetReturnRotation = 0.0f;
-    float inputZRotation = 0.0f;
-    public float InputZRotation
+    public enum AnimationState
     {
-        private get { return inputZRotation; }
-        set
-        {
-            inputZRotation = (int)value % 360;
-            if (inputZRotation < 0)
-                inputZRotation += 360;
-        }
-    }
+        NoAnimation,
+        Shaking,
+        Rotating
+    };
+
+    public float rotationSpeedDegPerSec = 5.0f;
+    float pointUpZRotation = 0.0f;
+    float tiltLeftZRotation = 45.0f;
+    float tiltRightZRotation = -45.0f;
+    float targetRotation = 0.0f;
     float rotationAnimationT = 0.0f;
     float rotationAnimationStartValue = 0.0f;
 
-    private void Start()
+    AnimationState animState = AnimationState.NoAnimation;
+    public AnimationState PlayerAnimState
     {
-        defaultZRotation = gameObject.transform.rotation.z;    
-    }
-
-    public enum ControlState
-    {
-        NoRotation = 0,
-        RotationByPlayer,
-        RotatingBack
-    }
-
-    ControlState controlState = ControlState.NoRotation;
-    public ControlState PlayerControlState
-    {
-        get { return controlState; }
+        get { return animState; }
         set
-        { 
-            controlState = value;
-            if (controlState == ControlState.RotatingBack)
+        {
+            animState = value;
+            if (animState == AnimationState.Rotating)
             {
                 rotationAnimationStartValue = gameObject.transform.rotation.eulerAngles.z;
-                targetReturnRotation = defaultZRotation;
                 if (rotationAnimationStartValue > 180.0f)
                 {
-                    targetReturnRotation += 360.0f;
+                    targetRotation += 360.0f;
                 }
                 rotationAnimationT = 0.0f;
-                InputZRotation = 0.0f;
             }
         }
+    }
+
+    public void PointUp()
+    {
+        targetRotation = pointUpZRotation;
+        PlayerAnimState = AnimationState.Rotating;
+    }
+
+    public void TiltRight()
+    {
+        targetRotation = tiltRightZRotation;
+        PlayerAnimState = AnimationState.Rotating;
+    }
+
+    public void TiltLeft()
+    {
+        targetRotation = tiltLeftZRotation;
+        PlayerAnimState = AnimationState.Rotating;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        switch (PlayerControlState)
+        switch (PlayerAnimState)
         {
-            case ControlState.NoRotation: break;
-            case ControlState.RotationByPlayer:
-                gameObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, InputZRotation);
-                break;
-            case ControlState.RotatingBack:
-                if (gameObject.transform.rotation.eulerAngles.z != defaultZRotation)
+            case AnimationState.NoAnimation: break;
+            case AnimationState.Shaking: break;
+            case AnimationState.Rotating:
+                if (gameObject.transform.rotation.eulerAngles.z != targetRotation)
                 {
-                    rotationAnimationT += Time.deltaTime;
+                    rotationAnimationT += Time.deltaTime * rotationSpeedDegPerSec;
                     float animCurveCounter = (Mathf.Pow(2.0f, rotationAnimationT * 4.0f) - 1.0f) / 15.0f;
-                    float newZRot = Mathf.Lerp(rotationAnimationStartValue, targetReturnRotation, animCurveCounter);
+                    float newZRot = Mathf.Lerp(rotationAnimationStartValue, targetRotation, animCurveCounter);
                     Quaternion q = Quaternion.Euler(0.0f, 0.0f, newZRot);
                     gameObject.transform.rotation = q;
                     if (rotationAnimationT >= 1.0f)
                     {
-                        gameObject.transform.rotation = Quaternion.Euler(0.0f, 0.0f, defaultZRotation);
-                        PlayerControlState = ControlState.NoRotation;
+                        PlayerAnimState = AnimationState.NoAnimation;
                     }
                 }
                 else
                 {
-                    PlayerControlState = ControlState.NoRotation;
+                    PlayerAnimState = AnimationState.NoAnimation;
                 }
                 break;
             default: break;

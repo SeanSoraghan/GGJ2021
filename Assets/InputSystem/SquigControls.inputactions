@@ -36,13 +36,45 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Left",
+                    "type": "Button",
+                    "id": "99cd68f4-0bb1-4442-a4c7-094efe5afeca",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "RightReleased",
+                    "type": "Button",
+                    "id": "c4e1dc13-67bb-4824-bce8-3b1c253ebab8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "LeftReleased",
+                    "type": "Button",
+                    "id": "b8478a33-6fe5-4e7e-bccd-ec43d7d4cd7a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Right",
+                    "type": "Button",
+                    "id": "f3865338-9ceb-4350-aba3-d6870472c747",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
                 {
                     "name": "",
-                    "id": "baa815b3-6f41-4255-ac23-1d85cc13c8cd",
-                    "path": "<Mouse>/position/y",
+                    "id": "b301644d-3fcf-4245-8340-23f5c79c4cb9",
+                    "path": "<Mouse>/delta/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -52,8 +84,8 @@
                 },
                 {
                     "name": "",
-                    "id": "d14eef32-38fd-43e5-b37d-33a4f4f1c587",
-                    "path": "<Mouse>/position/x",
+                    "id": "b7cce240-6c21-486e-9ce1-669ad83d5b0c",
+                    "path": "<Mouse>/delta/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -80,6 +112,94 @@
                     "processors": "",
                     "groups": "",
                     "action": "FireRelease",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87161d88-e8aa-423c-aa5c-deddc422d78f",
+                    "path": "<Keyboard>/#(A)",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ea5834eb-7a6e-4367-9fb4-7d462527a27d",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fe20cfc0-2126-44ac-afd8-c8c55469d8b4",
+                    "path": "<Keyboard>/#(D)",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c6dfc7b2-6ac0-46d6-a142-ccb36067962f",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "221e9fa8-05ba-43ed-b844-78f7aa364220",
+                    "path": "<Keyboard>/#(A)",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftReleased",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9544a67-2e7b-47c7-b825-97cfa11d81c4",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftReleased",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1a637bfa-273e-4a97-af7c-89a209d44710",
+                    "path": "<Keyboard>/#(D)",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightReleased",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd918cb8-900c-4ad1-a19b-2fab128b18d8",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightReleased",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

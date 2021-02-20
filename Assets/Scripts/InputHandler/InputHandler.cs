@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,23 +8,30 @@ using UnityEngine.Assertions;
 public class InputHandler : MonoBehaviour
 {
     public static InputHandler Instance;
+	
+	[Range(0.0f, 1.0f)]
+	public float movementSensitivity = 1.0f;
+	float maxSensitivity = 0.1f;
+	float sensitivity { get { return movementSensitivity * maxSensitivity; } }
 
 	public float TargetReachedThreshold = 0.5f;
 	public float RotationReachedThreshold = 5.0f;
 
+	static string[] actionNames =
+	{
+		"MoveUp", "MoveRight", "Fire", "FireReleased", "Left", "Right", "LeftReleased", "RightReleased"
+	};
+
+	List<Action<InputAction.CallbackContext>> actionBindings = new List<Action<InputAction.CallbackContext>>();
+
 	InputActionAsset inputActions;
 	LevelController levelController;
+	PlayerTransformController playerController;
 
 	Vector2 pointerXY = Vector2.zero;
 
-	private void OnDestroy()
-	{
-		InputActionMap actionMap = inputActions.actionMaps[0];
-		actionMap.actions[0].performed -= OnUp;
-		actionMap.actions[1].performed -= OnRight;
-		actionMap.actions[2].performed -= OnFired;
-		actionMap.actions[3].performed -= OnFireReleased;
-	}
+	bool leftButtonState = false;
+	bool rightButtonState = false;
 
 	private void Awake()
 	{
@@ -36,6 +44,15 @@ public class InputHandler : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this);
 		}
+
+		actionBindings.Add(OnMouseUp);
+		actionBindings.Add(OnMouseRight);
+		actionBindings.Add(OnFired);
+		actionBindings.Add(OnFireReleased);
+		actionBindings.Add(OnLeftPressed);
+		actionBindings.Add(OnRightPressed);
+		actionBindings.Add(OnLeftButtonReleased);
+		actionBindings.Add(OnRightButtonReleased);
 
 		PlayerInput input = GetComponent<PlayerInput>();
 		Assert.IsNotNull(input);
@@ -50,71 +67,88 @@ public class InputHandler : MonoBehaviour
 	void Start()
 	{
 		InputActionMap actionMap = inputActions.actionMaps[0];
-		actionMap.actions[0].performed += OnUp;
-		actionMap.actions[1].performed += OnRight;
-		actionMap.actions[2].performed += OnFired;
-		actionMap.actions[3].performed += OnFireReleased;
+		for (int i = 0; i < actionNames.Length; ++i)
+		{
+			InputAction action = actionMap.FindAction(actionNames[i]);
+			if (action != null)
+				action.performed += actionBindings[i];
+		}
+
+		playerController = levelController.PlayerCameraObject.GetComponent<PlayerTransformController>();
+		Assert.IsNotNull(playerController);
 	}
 
-	public void OnUp(InputAction.CallbackContext context)
+	private void OnDestroy()
 	{
-		PlayerTransformController controller = levelController.PlayerCameraObject.GetComponent<PlayerTransformController>();
-		if (controller != null)
+		InputActionMap actionMap = inputActions.actionMaps[0];
+		for (int i = 0; i < actionNames.Length; ++i)
 		{
-			if (controller.PlayerControlState == PlayerTransformController.ControlState.NoRotation)
-			{
-				float pointerY = context.ReadValue<float>();
-				pointerXY.y = pointerY;
-				MovePlayerCamToCursor();
-			}
+			InputAction action = actionMap.FindAction(actionNames[i]);
+			if (action != null)
+				action.performed -= actionBindings[i];
 		}
 	}
 
-	public void OnRight(InputAction.CallbackContext context)
+	public void OnMouseUp(InputAction.CallbackContext context)
 	{
-		PlayerTransformController controller = levelController.PlayerCameraObject.GetComponent<PlayerTransformController>();
-		if (controller != null)
-		{
-			if (controller.PlayerControlState == PlayerTransformController.ControlState.NoRotation)
-			{
-				float pointerX = context.ReadValue<float>();
-				pointerXY.x = pointerX;
-				MovePlayerCamToCursor();
-			}
-			else if (controller.PlayerControlState == PlayerTransformController.ControlState.RotationByPlayer)
-			{
-				float pointerX = context.ReadValue<float>();
-				controller.InputZRotation = Mathf.Clamp(pointerXY.x - pointerX , -45.0f, 45.0f);
-				CheckWinState();
-			}
-		}
+		//float pointerY = context.ReadValue<float>();
+		//pointerXY.y = pointerY;
+		//MovePlayerCamToCursor();
+		float deltaY = context.ReadValue<float>() * sensitivity;
+		MovePlayerCamDelta(new Vector3(0.0f, deltaY, 0.0f));
+	}
+
+	public void OnMouseRight(InputAction.CallbackContext context)
+	{
+
+		//float pointerX = context.ReadValue<float>();
+		//pointerXY.x = pointerX;
+		//MovePlayerCamToCursor();
+		float deltaX = context.ReadValue<float>() * sensitivity;
+		MovePlayerCamDelta(new Vector3(deltaX, 0.0f, 0.0f));
 	}
 
 	public void OnFired(InputAction.CallbackContext context)
 	{
 		if (levelController.setupComplete)
 		{
-			if (!CheckWinState())
-			{
-				PlayerTransformController controller = levelController.PlayerCameraObject.GetComponent<PlayerTransformController>();
-				if (controller != null)
-				{
-					controller.PlayerControlState = PlayerTransformController.ControlState.RotationByPlayer;
-				}
-			}
+			CheckWinState();
 		}
 	}
 
 	public void OnFireReleased(InputAction.CallbackContext context)
 	{
-		if (levelController.setupComplete)
-		{
-			PlayerTransformController controller = levelController.PlayerCameraObject.GetComponent<PlayerTransformController>();
-			if (controller != null)
-			{
-				controller.PlayerControlState = PlayerTransformController.ControlState.RotatingBack;
-			}
-		}
+
+	}
+
+	public void OnLeftPressed(InputAction.CallbackContext context)
+	{
+		leftButtonState = true;
+		playerController?.TiltLeft();
+	}
+
+	public void OnRightPressed(InputAction.CallbackContext context)
+	{
+		rightButtonState = true;
+		playerController?.TiltRight();
+	}
+
+	public void OnLeftButtonReleased(InputAction.CallbackContext context)
+	{
+		leftButtonState = false;
+		if (rightButtonState)
+			playerController?.TiltRight();
+		else
+			playerController?.PointUp();
+	}
+
+	public void OnRightButtonReleased(InputAction.CallbackContext context)
+	{
+		rightButtonState = false;
+		if (leftButtonState)
+			playerController?.TiltLeft();
+		else
+			playerController?.PointUp();
 	}
 
 	bool CheckWinState()
@@ -133,8 +167,10 @@ public class InputHandler : MonoBehaviour
 		{
 			levelController.ClearLevel();
 			levelController.CreateLevel();
+			playerController.PlayerAnimState = PlayerTransformController.AnimationState.NoAnimation;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -143,5 +179,12 @@ public class InputHandler : MonoBehaviour
 		float playerZ = levelController.PlayerCameraObject.transform.position.z;
 		Vector3 newPos = levelController.GridCameraObject.GetComponent<Camera>().ScreenToWorldPoint(pointerXY);
 		levelController.PlayerCameraObject.transform.position = new Vector3(newPos.x, newPos.y, playerZ);
+	}
+
+	void MovePlayerCamDelta(Vector3 delta)
+	{
+		Vector3 newPos = levelController.PlayerCameraObject.transform.position + delta;
+		Debug.Log(delta);
+		levelController.PlayerCameraObject.transform.position = newPos;
 	}
 }
