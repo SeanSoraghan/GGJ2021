@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
+    public bool drawImmediate = false;
     public TileGrid Grid;
     public GameObject GridCameraObject;
     public GameObject TargetCamObject;
@@ -21,7 +22,7 @@ public class LevelController : MonoBehaviour
     void Start()
     {
         Cursor.visible = false;
-
+        PlayerCameraObject.GetComponent<PlayerTransformController>().levelController = this;
         ClearLevel();
         CreateLevel();
     }
@@ -160,6 +161,8 @@ public class LevelController : MonoBehaviour
 
         if (InstructionsObject != null)
             InstructionsObject.GetComponent<Instructions>().display = true;
+
+        InputHandler.Instance.UpdatePlayerForButtonsState();
 
         setupComplete = true;
     }

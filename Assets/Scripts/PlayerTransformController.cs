@@ -1,22 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class PlayerTransformController : MonoBehaviour
 {
     public enum AnimationState
     {
         NoAnimation,
-        Rotating
+        Rotating,
+        WinStateAnimation
     };
 
+    public LevelController levelController;
+
     public float rotationSpeedDegPerSec = 5.0f;
+    public float winRotationSpeedDegPerSec = 1.0f;
     float pointUpZRotation = 0.0f;
     float tiltLeftZRotation = 45.0f;
     float tiltRightZRotation = -45.0f;
     float targetRotation = 0.0f;
     float rotationAnimationT = 0.0f;
     float rotationAnimationStartValue = 0.0f;
+
+    float postWinPauseSeconds = 0.5f;
+    float postWinPauseT = 0.0f;
 
     float shakeCentreRotation = 0.0f;
     float shakeAnimationT = 0.0f;
@@ -59,8 +67,17 @@ public class PlayerTransformController : MonoBehaviour
         get { return animState; }
         set
         {
+            AnimationState prevState = animState;
             animState = value;
-            if (animState == AnimationState.Rotating)
+            if (animState == AnimationState.NoAnimation)
+            {
+                if (prevState == AnimationState.WinStateAnimation)
+                {
+                    levelController?.ClearLevel();
+                    levelController?.CreateLevel();
+                }
+            }
+            else if (animState == AnimationState.Rotating)
             {
                 rotationAnimationStartValue = gameObject.transform.rotation.eulerAngles.z;
                 if (rotationAnimationStartValue > 180.0f)
@@ -69,25 +86,55 @@ public class PlayerTransformController : MonoBehaviour
                 }
                 rotationAnimationT = 0.0f;
             }
+            else if (animState == AnimationState.WinStateAnimation)
+            {
+                rotationAnimationStartValue = gameObject.transform.rotation.eulerAngles.z + 360.0f;
+                rotationAnimationT = 0.0f;
+                postWinPauseT = 0.0f;
+            }
         }
     }
 
-    public void PointUp()
+    public void PointUp(bool immediate = false)
     {
         targetRotation = pointUpZRotation;
-        PlayerAnimState = AnimationState.Rotating;
+        if (immediate)
+        {
+            Quaternion q = Quaternion.Euler(0.0f, 0.0f, targetRotation);
+            gameObject.transform.rotation = q;
+        }
+        else
+        {
+            PlayerAnimState = AnimationState.Rotating;
+        }
     }
 
-    public void TiltRight()
+    public void TiltRight(bool immediate = false)
     {
         targetRotation = tiltRightZRotation;
-        PlayerAnimState = AnimationState.Rotating;
+        if (immediate)
+        {
+            Quaternion q = Quaternion.Euler(0.0f, 0.0f, targetRotation);
+            gameObject.transform.rotation = q;
+        }
+        else
+        {
+            PlayerAnimState = AnimationState.Rotating;
+        }
     }
 
-    public void TiltLeft()
+    public void TiltLeft(bool immediate = false)
     {
         targetRotation = tiltLeftZRotation;
-        PlayerAnimState = AnimationState.Rotating;
+        if (immediate)
+        {
+            Quaternion q = Quaternion.Euler(0.0f, 0.0f, targetRotation);
+            gameObject.transform.rotation = q;
+        }
+        else
+        {
+            PlayerAnimState = AnimationState.Rotating;
+        }
     }
 
     public void Shake()
@@ -95,6 +142,12 @@ public class PlayerTransformController : MonoBehaviour
         Shaking = true;
     }
     
+    public void Win()
+    {
+        targetRotation = gameObject.transform.rotation.eulerAngles.z;
+        PlayerAnimState = AnimationState.WinStateAnimation;
+    }
+
     float GetShakeTarget()
     {
         return shakeCentreRotation + shakeArcDegrees * ((shakeSegment % 2) * 2 - 1);
@@ -106,22 +159,34 @@ public class PlayerTransformController : MonoBehaviour
         {
             case AnimationState.NoAnimation: break;
             case AnimationState.Rotating:
-                if (/*gameObject.transform.rotation.eulerAngles.z*/shakeCentreRotation != targetRotation)
+                if (rotationAnimationT < 1.0f)
                 {
                     rotationAnimationT += Time.deltaTime * rotationSpeedDegPerSec;
                     float animCurveCounter = (Mathf.Pow(2.0f, rotationAnimationT * 4.0f) - 1.0f) / 15.0f;
-                    /*float newZRot*/
                     shakeCentreRotation = Mathf.Lerp(rotationAnimationStartValue, targetRotation, animCurveCounter);
-                    Quaternion q = Quaternion.Euler(0.0f, 0.0f, /*newZRot*/shakeCentreRotation);
+                    Quaternion q = Quaternion.Euler(0.0f, 0.0f, shakeCentreRotation);
                     gameObject.transform.rotation = q;
-                    if (rotationAnimationT >= 1.0f)
-                    {
-                        PlayerAnimState = AnimationState.NoAnimation;
-                    }
                 }
                 else
                 {
                     PlayerAnimState = AnimationState.NoAnimation;
+                }
+                break;
+            case AnimationState.WinStateAnimation:
+                if (rotationAnimationT < 1.0f)
+                {
+                    rotationAnimationT += Time.deltaTime * winRotationSpeedDegPerSec;
+                    float animCurveCounter = Mathf.Log10(9.0f * rotationAnimationT + 1.0f);
+                    float newZRot = Mathf.Lerp(rotationAnimationStartValue, targetRotation, animCurveCounter);
+                    Quaternion q = Quaternion.Euler(0.0f, 0.0f, newZRot);
+                    gameObject.transform.rotation = q;
+                }
+                else
+                {
+                    if (postWinPauseT < postWinPauseSeconds)
+                        postWinPauseT += Time.deltaTime;
+                    if (postWinPauseT >= postWinPauseSeconds)
+                        PlayerAnimState = AnimationState.NoAnimation;
                 }
                 break;
             default: break;
@@ -129,6 +194,7 @@ public class PlayerTransformController : MonoBehaviour
 
         if (Shaking)
         {
+            Assert.AreNotEqual(PlayerAnimState, AnimationState.WinStateAnimation);
             shakeAnimationT += Time.deltaTime * shakeRotationSpeedDegPerSec;
             float animCurveCounter = (Mathf.Pow(2.0f, shakeAnimationT * 4.0f) - 1.0f) / 15.0f;
             float newZRot = Mathf.Lerp(shakeSegmentStartRotation, shakeTarget, animCurveCounter);

@@ -45,8 +45,8 @@ public class InputHandler : MonoBehaviour
 			DontDestroyOnLoad(this);
 		}
 
-		actionBindings.Add(OnMouseUp);
-		actionBindings.Add(OnMouseRight);
+		actionBindings.Add(OnMouseMoveUp);
+		actionBindings.Add(OnMouseMoveRight);
 		actionBindings.Add(OnFired);
 		actionBindings.Add(OnFireReleased);
 		actionBindings.Add(OnLeftPressed);
@@ -89,31 +89,37 @@ public class InputHandler : MonoBehaviour
 		}
 	}
 
-	public void OnMouseUp(InputAction.CallbackContext context)
+	bool ShouldRespondToInput()
 	{
-		//float pointerY = context.ReadValue<float>();
-		//pointerXY.y = pointerY;
-		//MovePlayerCamToCursor();
-		float deltaY = context.ReadValue<float>() * sensitivity;
-		MovePlayerCamDelta(new Vector3(0.0f, deltaY, 0.0f));
+		return levelController.setupComplete && (playerController.PlayerAnimState != PlayerTransformController.AnimationState.WinStateAnimation);
 	}
 
-	public void OnMouseRight(InputAction.CallbackContext context)
+	public void OnMouseMoveUp(InputAction.CallbackContext context)
 	{
+		if (ShouldRespondToInput())
+		{
+			float deltaY = context.ReadValue<float>() * sensitivity;
+			MovePlayerCamDelta(new Vector3(0.0f, deltaY, 0.0f));
+		}
+	}
 
-		//float pointerX = context.ReadValue<float>();
-		//pointerXY.x = pointerX;
-		//MovePlayerCamToCursor();
-		float deltaX = context.ReadValue<float>() * sensitivity;
-		MovePlayerCamDelta(new Vector3(deltaX, 0.0f, 0.0f));
+	public void OnMouseMoveRight(InputAction.CallbackContext context)
+	{
+		if (ShouldRespondToInput())
+		{
+			float deltaX = context.ReadValue<float>() * sensitivity;
+			MovePlayerCamDelta(new Vector3(deltaX, 0.0f, 0.0f));
+		}
 	}
 
 	public void OnFired(InputAction.CallbackContext context)
 	{
-		if (levelController.setupComplete)
+		if (ShouldRespondToInput())
 		{
 			if (!CheckWinState())
 				playerController?.Shake();
+			else
+				playerController?.Win();
 		}
 	}
 
@@ -125,31 +131,53 @@ public class InputHandler : MonoBehaviour
 	public void OnLeftPressed(InputAction.CallbackContext context)
 	{
 		leftButtonState = true;
-		playerController?.TiltLeft();
+		if (ShouldRespondToInput())
+		{
+			playerController?.TiltLeft();
+		}
 	}
 
 	public void OnRightPressed(InputAction.CallbackContext context)
 	{
 		rightButtonState = true;
-		playerController?.TiltRight();
+		if (ShouldRespondToInput())
+		{
+			playerController?.TiltRight();
+		}
 	}
 
 	public void OnLeftButtonReleased(InputAction.CallbackContext context)
 	{
 		leftButtonState = false;
-		if (rightButtonState)
-			playerController?.TiltRight();
-		else
-			playerController?.PointUp();
+		if (ShouldRespondToInput())
+		{
+			if (rightButtonState)
+				playerController?.TiltRight();
+			else
+				playerController?.PointUp();
+		}
 	}
 
 	public void OnRightButtonReleased(InputAction.CallbackContext context)
 	{
 		rightButtonState = false;
+		if (ShouldRespondToInput())
+		{
+			if (leftButtonState)
+				playerController?.TiltLeft();
+			else
+				playerController?.PointUp();
+		}
+	}
+
+	public void UpdatePlayerForButtonsState()
+	{
 		if (leftButtonState)
-			playerController?.TiltLeft();
+			playerController?.TiltLeft(true);
+		else if (rightButtonState)
+			playerController?.TiltRight(true);
 		else
-			playerController?.PointUp();
+			playerController?.PointUp(true);
 	}
 
 	bool CheckWinState()
@@ -164,22 +192,7 @@ public class InputHandler : MonoBehaviour
 			targetRotZ += 360.0f;
 		float distFromTarget = (targetPos - playerPos).magnitude;
 		float rotDist = Mathf.Abs(playerRotZ - targetRotZ);
-		if (distFromTarget < TargetReachedThreshold && rotDist < RotationReachedThreshold)
-		{
-			levelController.ClearLevel();
-			levelController.CreateLevel();
-			playerController.PlayerAnimState = PlayerTransformController.AnimationState.NoAnimation;
-			return true;
-		}
-
-		return false;
-	}
-
-	void MovePlayerCamToCursor()
-	{
-		float playerZ = levelController.PlayerCameraObject.transform.position.z;
-		Vector3 newPos = levelController.GridCameraObject.GetComponent<Camera>().ScreenToWorldPoint(pointerXY);
-		levelController.PlayerCameraObject.transform.position = new Vector3(newPos.x, newPos.y, playerZ);
+		return distFromTarget < TargetReachedThreshold && rotDist < RotationReachedThreshold;
 	}
 
 	void MovePlayerCamDelta(Vector3 delta)

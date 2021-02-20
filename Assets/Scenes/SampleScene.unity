@@ -415,7 +415,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c4f8b70e27424f4a9e4e4eba00c0036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelController: {fileID: 0}
   rotationSpeedDegPerSec: 5
+  winRotationSpeedDegPerSec: 0.5
+  numShakeSegments: 6
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,6 +664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abfb7adcd4657c441aa505e8e2e00619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawImmediate: 1
   Grid: {fileID: 123827343}
   GridCameraObject: {fileID: 519420028}
   TargetCamObject: {fileID: 1591765143}
@@ -727,7 +731,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaefb433c79933c4a99a692f3608bc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSensitivity: 1
+  movementSensitivity: 0.7
   TargetReachedThreshold: 0.5
   RotationReachedThreshold: 5
 --- !u!1 &1591765143

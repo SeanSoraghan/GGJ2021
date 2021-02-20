@@ -44,7 +44,15 @@ public class PathTile : MonoBehaviour
     public void BeginDrawing()
     {
         _tileState = TileState.Drawing;
-        pathRenderer.BeginDrawingLine();
+        if (OwnerGrid.levelController.drawImmediate)
+        {
+            pathRenderer.RenderPathImmediate();
+            PathDrawingComplete();
+        }
+        else 
+        { 
+            pathRenderer.BeginDrawingLine(); 
+        }
     }
 
     public void PathDrawingComplete()
