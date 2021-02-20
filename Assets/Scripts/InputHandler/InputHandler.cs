@@ -112,7 +112,8 @@ public class InputHandler : MonoBehaviour
 	{
 		if (levelController.setupComplete)
 		{
-			CheckWinState();
+			if (!CheckWinState())
+				playerController?.Shake();
 		}
 	}
 
@@ -184,7 +185,6 @@ public class InputHandler : MonoBehaviour
 	void MovePlayerCamDelta(Vector3 delta)
 	{
 		Vector3 newPos = levelController.PlayerCameraObject.transform.position + delta;
-		Debug.Log(delta);
 		levelController.PlayerCameraObject.transform.position = newPos;
 	}
 }

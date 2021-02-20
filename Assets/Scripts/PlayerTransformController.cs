@@ -7,7 +7,6 @@ public class PlayerTransformController : MonoBehaviour
     public enum AnimationState
     {
         NoAnimation,
-        Shaking,
         Rotating
     };
 
@@ -18,6 +17,41 @@ public class PlayerTransformController : MonoBehaviour
     float targetRotation = 0.0f;
     float rotationAnimationT = 0.0f;
     float rotationAnimationStartValue = 0.0f;
+
+    float shakeCentreRotation = 0.0f;
+    float shakeAnimationT = 0.0f;
+    [Range(10.0f, 25.0f)]
+    float shakeArcDegrees = 15.0f;
+    float shakeTarget = 0.0f;
+    [Range(10.0f, 50.0f)]
+    float shakeRotationSpeedDegPerSec = 20.0f;
+    int shakeSegment = 0;
+    float shakeSegmentStartRotation = 0.0f;
+    [Range(3, 6)]
+    public int numShakeSegments = 3;
+
+    bool shaking = false;
+    public bool Shaking
+    { 
+        get { return shaking; } 
+        set 
+        {
+            shaking = value;
+            if (shaking)
+            {
+                shakeSegment = 0;
+                shakeAnimationT = 0.0f;
+                shakeCentreRotation = gameObject.transform.rotation.eulerAngles.z;
+                shakeSegmentStartRotation = shakeCentreRotation;
+                shakeTarget = GetShakeTarget();
+            }
+            else
+            {
+                Quaternion q = Quaternion.Euler(0.0f, 0.0f, shakeCentreRotation);
+                gameObject.transform.rotation = q;
+            }
+        } 
+    }
 
     AnimationState animState = AnimationState.NoAnimation;
     public AnimationState PlayerAnimState
@@ -56,20 +90,29 @@ public class PlayerTransformController : MonoBehaviour
         PlayerAnimState = AnimationState.Rotating;
     }
 
-    // Update is called once per frame
+    public void Shake()
+    {
+        Shaking = true;
+    }
+    
+    float GetShakeTarget()
+    {
+        return shakeCentreRotation + shakeArcDegrees * ((shakeSegment % 2) * 2 - 1);
+    }
+
     void FixedUpdate()
     {
         switch (PlayerAnimState)
         {
             case AnimationState.NoAnimation: break;
-            case AnimationState.Shaking: break;
             case AnimationState.Rotating:
-                if (gameObject.transform.rotation.eulerAngles.z != targetRotation)
+                if (/*gameObject.transform.rotation.eulerAngles.z*/shakeCentreRotation != targetRotation)
                 {
                     rotationAnimationT += Time.deltaTime * rotationSpeedDegPerSec;
                     float animCurveCounter = (Mathf.Pow(2.0f, rotationAnimationT * 4.0f) - 1.0f) / 15.0f;
-                    float newZRot = Mathf.Lerp(rotationAnimationStartValue, targetRotation, animCurveCounter);
-                    Quaternion q = Quaternion.Euler(0.0f, 0.0f, newZRot);
+                    /*float newZRot*/
+                    shakeCentreRotation = Mathf.Lerp(rotationAnimationStartValue, targetRotation, animCurveCounter);
+                    Quaternion q = Quaternion.Euler(0.0f, 0.0f, /*newZRot*/shakeCentreRotation);
                     gameObject.transform.rotation = q;
                     if (rotationAnimationT >= 1.0f)
                     {
@@ -82,6 +125,32 @@ public class PlayerTransformController : MonoBehaviour
                 }
                 break;
             default: break;
+        }
+
+        if (Shaking)
+        {
+            shakeAnimationT += Time.deltaTime * shakeRotationSpeedDegPerSec;
+            float animCurveCounter = (Mathf.Pow(2.0f, shakeAnimationT * 4.0f) - 1.0f) / 15.0f;
+            float newZRot = Mathf.Lerp(shakeSegmentStartRotation, shakeTarget, animCurveCounter);
+            Quaternion q = Quaternion.Euler(0.0f, 0.0f, newZRot);
+            gameObject.transform.rotation = q;
+            if (shakeAnimationT >= 1.0f)
+            {
+                ++shakeSegment;
+                if (shakeSegment >= numShakeSegments)
+                {
+                    Shaking = false;
+                }
+                else
+                {
+                    shakeSegmentStartRotation = shakeTarget;
+                    if (shakeSegment == numShakeSegments - 1)
+                        shakeTarget = shakeCentreRotation;
+                    else
+                        shakeTarget = GetShakeTarget();
+                    shakeAnimationT = 0.0f;
+                }
+            }
         }
     }
 }
