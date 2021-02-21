@@ -645,6 +645,8 @@ GameObject:
   - component: {fileID: 1413851646}
   - component: {fileID: 1413851649}
   - component: {fileID: 1413851648}
+  - component: {fileID: 1413851650}
+  - component: {fileID: 1413851651}
   m_Layer: 0
   m_Name: LevelController
   m_TagString: Untagged
@@ -734,6 +736,32 @@ MonoBehaviour:
   movementSensitivity: 0.7
   TargetReachedThreshold: 0.5
   RotationReachedThreshold: 5
+--- !u!114 &1413851650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413851645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a10777da86b1b4eab9a7d16b9c33ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numSources: 3
+--- !u!114 &1413851651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413851645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80b7abbf61b828d4394038abd0eceecd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numSourcesPerNote: 3
 --- !u!1 &1591765143
 GameObject:
   m_ObjectHideFlags: 0

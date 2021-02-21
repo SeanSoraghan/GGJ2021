@@ -62,6 +62,7 @@ public class PathRenderer : MonoBehaviour
 
     public void BeginDrawingLine()
     {
+        MusicManager.Instance?.TriggerNote(Random.Range(0, MusicManager.numNotes));
         if (Positions.Count > 1)
         {
             renderPositions.Clear();
@@ -125,6 +126,7 @@ public class PathRenderer : MonoBehaviour
 
     void FinishedDrawingSegment()
     {
+        MusicManager.Instance?.TriggerNote(Random.Range(0, MusicManager.numNotes));
         if (renderPositions.Count < Positions.Count)
         {
             currentSegmentDirection = Positions[renderPositions.Count] - renderPositions[renderPositions.Count - 1];

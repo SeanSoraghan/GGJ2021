@@ -65,6 +65,6 @@ public class SFXManager : MonoBehaviour
         audioSources[currentSourceIndex].Stop();
         audioSources[currentSourceIndex].clip = Clips[SFXTypeString(type)];
         audioSources[currentSourceIndex].Play();
-        ++currentSourceIndex;
+        currentSourceIndex = (currentSourceIndex + 1) % numSources;
     }
 }
