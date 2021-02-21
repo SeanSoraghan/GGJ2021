@@ -106,6 +106,17 @@
                 },
                 {
                     "name": "",
+                    "id": "d3ff75a5-697f-4fde-88fd-9a4e78469daf",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "fb15ba09-83d9-474a-991e-57394b745030",
                     "path": "<Mouse>/leftButton",
                     "interactions": "Press(behavior=1)",

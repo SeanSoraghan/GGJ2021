@@ -14,6 +14,7 @@ public class LevelController : MonoBehaviour
     public GameObject InstructionsObject;
     public float MainGridHeightProportion = 0.8f;
 
+    public bool gameStarted = false;
     public bool setupComplete = false;
 
     float[] rotationOptions = { -45.0f, 0.0f, 45.0f };
@@ -21,8 +22,15 @@ public class LevelController : MonoBehaviour
 
     void Start()
     {
-        Cursor.visible = false;
         PlayerCameraObject.GetComponent<PlayerTransformController>().levelController = this;
+        HidePlayerAndTarget();
+    }
+
+    public void StartGame()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        InstructionsObject.GetComponent<Instructions>().showBegin = false;
         ClearLevel();
         CreateLevel();
     }

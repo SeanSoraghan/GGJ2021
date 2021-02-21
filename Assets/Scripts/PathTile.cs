@@ -9,6 +9,7 @@ public class PathTile : MonoBehaviour
     PathRenderer pathRenderer;
     PathGenerator pathGenerator;
 
+    public int GetSideLength() { return pathGenerator.SideLength; }
     public enum TileState
     {
         Empty = 0,

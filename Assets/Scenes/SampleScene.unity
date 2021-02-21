@@ -159,7 +159,7 @@ MonoBehaviour:
   guiSkin: {fileID: 11400000, guid: ef601c4058b1dc746afd7939dfc60e90, type: 2}
   FrameLabel: Current
   FloatLabelLeft: 0
-  LabelAlignment: 6
+  LabelAlignment: 3
   panelFrameCentre: {x: 0.5, y: 0.5}
   display: 1
 --- !u!4 &97440037
@@ -265,7 +265,7 @@ MonoBehaviour:
   guiSkin: {fileID: 11400000, guid: ef601c4058b1dc746afd7939dfc60e90, type: 2}
   FrameLabel: Target
   FloatLabelLeft: 1
-  LabelAlignment: 8
+  LabelAlignment: 5
   panelFrameCentre: {x: 0.5, y: 0.5}
   display: 1
 --- !u!4 &166294832
@@ -619,6 +619,7 @@ MonoBehaviour:
   heightPropotion: 0.2
   guiSkin: {fileID: 11400000, guid: ef601c4058b1dc746afd7939dfc60e90, type: 2}
   display: 1
+  showBegin: 1
 --- !u!4 &1070411790
 Transform:
   m_ObjectHideFlags: 0
@@ -675,6 +676,7 @@ MonoBehaviour:
   TargetFrameObject: {fileID: 166294830}
   InstructionsObject: {fileID: 1070411788}
   MainGridHeightProportion: 0.8
+  gameStarted: 0
   setupComplete: 0
 --- !u!4 &1413851647
 Transform:
@@ -733,7 +735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaefb433c79933c4a99a692f3608bc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSensitivity: 0.7
+  movementSensitivity: 0.3
   TargetReachedThreshold: 0.5
   RotationReachedThreshold: 5
 --- !u!114 &1413851650
@@ -748,6 +750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28a10777da86b1b4eab9a7d16b9c33ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0.9
   numSources: 3
 --- !u!114 &1413851651
 MonoBehaviour:
@@ -761,6 +764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80b7abbf61b828d4394038abd0eceecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0.9
   numSourcesPerNote: 3
 --- !u!1 &1591765143
 GameObject:

@@ -10,6 +10,7 @@ public class SFXManager : MonoBehaviour
         PlacementIncorrect,
         PlacementCorrect,
         Tilt,
+        Erase,
         NumTypes
     }
 
@@ -20,12 +21,16 @@ public class SFXManager : MonoBehaviour
             case SFXType.PlacementIncorrect: return "PlacementIncorrect";
             case SFXType.PlacementCorrect: return "PlacementCorrect";
             case SFXType.Tilt: return "Tilt";
+            case SFXType.Erase: return "Erase";
         }
         Debug.LogError("Audio SFX Manager: Unrecognized SFX Type");
         return "Unrecognized";
     }
 
     public static SFXManager Instance;
+
+    [Range(0.0f, 1.0f)]
+    public float level = 0.6f;
 
     public int numSources = 3;
     private List<AudioSource> audioSources = new List<AudioSource>();
@@ -57,6 +62,7 @@ public class SFXManager : MonoBehaviour
             audioSources.Add(gameObject.AddComponent<AudioSource>());
             audioSources[audioSources.Count - 1].playOnAwake = false;
             audioSources[audioSources.Count - 1].loop = false;
+            audioSources[audioSources.Count - 1].volume = level;
         }
     }
 

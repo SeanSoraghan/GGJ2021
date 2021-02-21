@@ -122,6 +122,10 @@ public class InputHandler : MonoBehaviour
 			else
 				playerController?.Win();
 		}
+		else if (!levelController.gameStarted)
+		{
+			levelController.StartGame();
+		}
 	}
 
 	public void OnFireReleased(InputAction.CallbackContext context)

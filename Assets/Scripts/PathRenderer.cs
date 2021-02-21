@@ -20,6 +20,8 @@ public class PathRenderer : MonoBehaviour
     bool drawingLine = false;
     bool erasingLine = false;
 
+    int noteIndex = 0;
+
     string textureName = "White";
     public string TextureName
     {
@@ -62,7 +64,6 @@ public class PathRenderer : MonoBehaviour
 
     public void BeginDrawingLine()
     {
-        MusicManager.Instance?.TriggerNote(Random.Range(0, MusicManager.numNotes));
         if (Positions.Count > 1)
         {
             renderPositions.Clear();
@@ -70,6 +71,11 @@ public class PathRenderer : MonoBehaviour
             currentSegmentDirection = Positions[renderPositions.Count] - renderPositions[renderPositions.Count - 1];
             currentSegmentDirection.Normalize();
             renderPositions.Add(renderPositions[renderPositions.Count - 1]);
+
+            //int posUnrolled = (int)(renderPositions[renderPositions.Count - 1].y * OwnerTile.GetSideLength() + renderPositions[renderPositions.Count - 1].x);
+            //noteIndex = LoopRoundMod(posUnrolled, MusicManager.numNotes);
+            //MusicManager.Instance?.TriggerNoteLong(noteIndex, false);
+
             drawingLine = true;
             StartCoroutine(LineDraw());
         }
@@ -124,14 +130,25 @@ public class PathRenderer : MonoBehaviour
         }
     }
 
+    int LoopRoundMod(int x, int m)
+    {
+        return (x % m + m) % m;
+    }
     void FinishedDrawingSegment()
     {
-        MusicManager.Instance?.TriggerNote(Random.Range(0, MusicManager.numNotes));
         if (renderPositions.Count < Positions.Count)
         {
+            Vector3 prevDirection = currentSegmentDirection;
             currentSegmentDirection = Positions[renderPositions.Count] - renderPositions[renderPositions.Count - 1];
             currentSegmentDirection.Normalize();
             renderPositions.Add(renderPositions[renderPositions.Count - 1]);
+
+            if (!Vector3.Equals(prevDirection, currentSegmentDirection))
+            {
+                int posUnrolled = (int)(renderPositions[renderPositions.Count - 1].y * OwnerTile.GetSideLength() + renderPositions[renderPositions.Count - 1].x);
+                noteIndex = LoopRoundMod(posUnrolled, MusicManager.numNotes);
+                MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Short);
+            }
         }
         else
         {
