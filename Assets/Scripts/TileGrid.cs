@@ -8,16 +8,16 @@ public class TileGrid : MonoBehaviour
     public int GridHeight = 3;
     public int TileSideLength = 5;
     public GameObject pathTilePrefab;
-    public GameObject GridPointPrefab;
     public float LineDrawingSpeedUnitsPerSecond = 5.0f;
     public float PointReachedThreshold = 0.1f;
     public LevelController levelController;
-    public int VisualGridCoarse = 2;
+    public GameObject GridPointPrefab;
+    public PointGrid pointGrid;
 
     int numErasedTiles = 0;
     int noteIndex = 0;
 
-    List<List<GameObject>> tiles = new List<List<GameObject>>();
+    List<List<GameObject>> tiles = new List<List<GameObject>>(); 
     Vector2Int _currentTileXY = Vector2Int.zero;
     Vector2Int currentTileXY
     {
@@ -28,6 +28,14 @@ public class TileGrid : MonoBehaviour
         } 
     }
     List<Vector2Int> emptyTilePositions = new List<Vector2Int>();
+
+    private void Awake()
+    {
+        pointGrid = gameObject.AddComponent<PointGrid>();
+        pointGrid.GridPointPrefab = GridPointPrefab;
+        pointGrid.GridWidth = GridWidth * (TileSideLength - 1) + 1;
+        pointGrid.GridHeight = GridHeight * (TileSideLength - 1) + 1;
+    }
 
     public void EraseGrid()
     {
@@ -71,6 +79,11 @@ public class TileGrid : MonoBehaviour
     {
         return (x % m + m) % m;
     }
+    public int PreviousNoteIndex()
+    {
+        return LoopRoundMod(noteIndex - 1, MusicManager.numNotes); 
+    }
+
     public void TileCompleted()
     {
         int indexToRemove = emptyTilePositions.FindIndex(xy => xy == currentTileXY);
@@ -80,6 +93,7 @@ public class TileGrid : MonoBehaviour
         }
         emptyTilePositions.RemoveAt(indexToRemove);
         Vector2Int exitPosition = tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathGenerator>().ExitPoint;
+        int lastPlayedNoteIndex = tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathRenderer>().noteIndex;
         // Need to deal with exiting directly on a corner - choose horizontal or vertical neighbour
         Vector2Int nextTileEntryPoint = exitPosition;
         if (exitPosition.x == 0)
@@ -110,10 +124,12 @@ public class TileGrid : MonoBehaviour
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Long);
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Medium, true);
             noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
+            if (noteIndex == lastPlayedNoteIndex)
+                noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
         }
         else
         {
-            ChooseEmptyTile();
+            ChooseEmptyTile(lastPlayedNoteIndex);
         }
     }
 
@@ -126,6 +142,9 @@ public class TileGrid : MonoBehaviour
         }
     }
 
+    // tiles of TileSideLength overlap. index (TileSideLength - 1) of one tile is index 0 of the one joining it...
+    int NumGridPointsX() { return GridWidth * TileSideLength - (GridWidth - 1); }
+    int NumGridPointsY() { return GridHeight * TileSideLength - (GridHeight - 1); }
     void Start()
     {
         for (int gridX = 0; gridX < GridWidth; ++gridX)
@@ -142,40 +161,11 @@ public class TileGrid : MonoBehaviour
                 tiles[gridX][gridY].GetComponent<PathRenderer>().PointReachedThreshold = PointReachedThreshold;
                 tiles[gridX][gridY].GetComponent<PathRenderer>().TextureName = "Squiggle";
                 emptyTilePositions.Add(new Vector2Int(gridX, gridY));
-                for (int gridMarkerX = 0; gridMarkerX < VisualGridCoarse; ++gridMarkerX)
-                {
-                    for (int gridMarkerY = 0; gridMarkerY < VisualGridCoarse; ++gridMarkerY)
-                    {
-                        float gridMarkerWorldX = tileStartX + ((TileSideLength - 1) / (float)VisualGridCoarse) * gridMarkerX;
-                        float gridMarkerWorldY = tileStartY + ((TileSideLength - 1) / (float)VisualGridCoarse) * gridMarkerY;
-                        Instantiate(GridPointPrefab, new Vector3(gridMarkerWorldX, gridMarkerWorldY, 1.0f), Quaternion.identity);
-                    }
-                }
-            }
-            // Last row of grid points
-            for (int gridMarkerX = 0; gridMarkerX < VisualGridCoarse; ++gridMarkerX)
-            {
-                float gridMarkerWorldX = tileStartX + ((TileSideLength - 1) / (float)VisualGridCoarse) * gridMarkerX;
-                int gridPointY = GridHeight * (TileSideLength - 1);
-                Instantiate(GridPointPrefab, new Vector3(gridMarkerWorldX, gridPointY, 1.0f), Quaternion.identity);
             }
         }
-        // Last column of grid points
-        for (int gridY = 0; gridY < GridHeight; ++gridY)
-        {
-            int tileStartY = gridY * (TileSideLength - 1);
-            for (int gridMarkerY = 0; gridMarkerY < VisualGridCoarse; ++gridMarkerY)
-            {
-                int gridPointX = GridWidth * (TileSideLength - 1);
-                float gridMarkerWorldY = tileStartY + ((TileSideLength - 1) / (float)VisualGridCoarse) * gridMarkerY;
-                Instantiate(GridPointPrefab, new Vector3(gridPointX, gridMarkerWorldY, 1.0f), Quaternion.identity);
-            }
-        }
-        // Top right grid point
-        Instantiate(GridPointPrefab, new Vector3(GridWidth * (TileSideLength - 1), GridHeight * (TileSideLength - 1), 1.0f), Quaternion.identity);
     }
 
-    void ChooseEmptyTile()
+    void ChooseEmptyTile(int lastPlayedNoteIndex = -1)
     {
         // Set to -1, -1 for note triggering (start new sequence).
         currentTileXY = new Vector2Int(-1, -1);
@@ -189,6 +179,8 @@ public class TileGrid : MonoBehaviour
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Long);
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Medium, true);
             noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
+            if (noteIndex == lastPlayedNoteIndex)
+                noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
         }
         else
         {

@@ -210,12 +210,12 @@ MonoBehaviour:
   TileSideLength: 5
   pathTilePrefab: {fileID: 9129783486842114700, guid: d09ab2e38fe87da4795bb837713d1412,
     type: 3}
-  GridPointPrefab: {fileID: 1007074067257980653, guid: 334decd58c1901c489412add5f441bbb,
-    type: 3}
   LineDrawingSpeedUnitsPerSecond: 10
   PointReachedThreshold: 0.2
   levelController: {fileID: 0}
-  VisualGridCoarse: 4
+  GridPointPrefab: {fileID: 1007074067257980653, guid: 334decd58c1901c489412add5f441bbb,
+    type: 3}
+  pointGrid: {fileID: 0}
 --- !u!4 &123827344
 Transform:
   m_ObjectHideFlags: 0
