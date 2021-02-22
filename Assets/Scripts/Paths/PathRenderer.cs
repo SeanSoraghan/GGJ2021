@@ -141,6 +141,8 @@ public class PathRenderer : MonoBehaviour
 
             if (!Vector3.Equals(prevDirection, currentSegmentDirection))
             {
+                Vector3 currentPos = renderPositions[renderPositions.Count - 1];
+                OwnerTile.OwnerGrid.PulsePointOnCurrentTile(new Vector2Int((int)currentPos.x, (int)currentPos.y), 1.5f);
                 int posUnrolled = (int)(renderPositions[renderPositions.Count - 1].y * OwnerTile.GetSideLength() + renderPositions[renderPositions.Count - 1].x);
                 noteIndex = LoopRoundMod(posUnrolled, MusicManager.numNotes);
                 if (OwnerTile.OwnerGrid.PreviousNoteIndex() == noteIndex)

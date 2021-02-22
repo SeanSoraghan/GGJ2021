@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PointGrid : MonoBehaviour
 {
-	public int GridWidth = 17;
-    public int GridHeight = 13;
+	public int GridWidth = 0;
+    public int GridHeight = 0;
 	public GameObject GridPointPrefab;
 	List<List<GameObject>> gridPoints = new List<List<GameObject>>();
 
@@ -19,5 +19,10 @@ public class PointGrid : MonoBehaviour
                 gridPoints[gridX].Add(Instantiate(GridPointPrefab, new Vector3(gridX, gridY, 1.0f), Quaternion.identity));
             }
         }
+    }
+
+    public void PulsePoint(int x, int y, float pulseScaleProportion)
+    {
+        gridPoints[x][y].GetComponent<GridPointAnimator>().Pulse(pulseScaleProportion);
     }
 }

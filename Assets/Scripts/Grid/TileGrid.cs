@@ -19,10 +19,10 @@ public class TileGrid : MonoBehaviour
 
     List<List<GameObject>> tiles = new List<List<GameObject>>(); 
     Vector2Int _currentTileXY = Vector2Int.zero;
-    Vector2Int currentTileXY
+    public Vector2Int currentTileXY
     {
         get { return _currentTileXY; }
-        set 
+        private set 
         {
             _currentTileXY = value;
         } 
@@ -121,6 +121,9 @@ public class TileGrid : MonoBehaviour
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathGenerator>().EntryPoint = nextTileEntryPoint;
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().GeneratePath();
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().BeginDrawing();
+            // Pulse the point on the grid that the line is being drawn from.
+            PulsePointOnCurrentTile(nextTileEntryPoint, 3.0f);
+            // Trigger a musical note.
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Long);
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Medium, true);
             noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
@@ -176,6 +179,9 @@ public class TileGrid : MonoBehaviour
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathGenerator>().EntryPoint = randomEntryPoint;
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().GeneratePath();
             tiles[currentTileXY.x][currentTileXY.y].GetComponent<PathTile>().BeginDrawing();
+            // Pulse the point on the grid that the line is being drawn from.
+            PulsePointOnCurrentTile(randomEntryPoint, 3.0f);
+            // Trigger a musical note
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Long);
             MusicManager.Instance?.TriggerNote(noteIndex, MusicManager.NoteLength.Medium, true);
             noteIndex = LoopRoundMod(noteIndex + 1, MusicManager.numNotes);
@@ -191,5 +197,11 @@ public class TileGrid : MonoBehaviour
     void GridComplete()
     {
         levelController?.GridSetupComplete();
+    }
+
+    public void PulsePointOnCurrentTile(Vector2Int positionInTile, float pulseScale)
+    {
+        Vector2Int positionInPointGrid = currentTileXY * (TileSideLength - 1) + positionInTile;
+        pointGrid.PulsePoint(positionInPointGrid.x, positionInPointGrid.y, pulseScale);
     }
 }
